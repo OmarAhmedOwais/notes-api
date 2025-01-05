@@ -18,7 +18,16 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const hashedPassword = await hashPassword(createUserDto.password);
-
+    // check if user already exists username or email
+    const existingUser = await this.usersRepository.findOne({
+      where: [
+        { username: createUserDto.username },
+        { email: createUserDto.email },
+      ],
+    });
+    if (existingUser) {
+      throw new NotFoundException('User already exists');
+    }
     const newUser = this.usersRepository.create({
       username: createUserDto.username,
       email: createUserDto.email,

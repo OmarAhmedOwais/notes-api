@@ -13,12 +13,15 @@ import { UserResponseDto } from './dtos/user-response.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { plainToClass } from 'class-transformer';
+import { UserRole } from './user-role.enum';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
   async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const user = await this.usersService.create(createUserDto);
     return plainToClass(UserResponseDto, user);
@@ -32,12 +35,14 @@ export class UsersController {
   }
 
   @Get()
+  @Roles(UserRole.ADMIN)
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.usersService.findAll();
     return users.map((user) => plainToClass(UserResponseDto, user));
   }
 
   @Put(':id')
+  @Roles(UserRole.ADMIN)
   async update(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -47,7 +52,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
+  @Roles(UserRole.ADMIN)
+  async delete(@Param('id') id: number): Promise<void> {
     return this.usersService.delete(id);
   }
 }
