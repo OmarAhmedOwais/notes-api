@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserResponseDto } from './dtos/user-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { hashPassword } from 'src/common/helpers/password.helper';
+import { ValidateUserResponseDto } from './dtos/validate-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,9 +29,11 @@ export class UsersService {
     return plainToInstance(UserResponseDto, savedUser);
   }
 
-  async findByUsername(username: string): Promise<UserResponseDto | undefined> {
+  async findByUsername(
+    username: string,
+  ): Promise<ValidateUserResponseDto | undefined> {
     const user = await this.usersRepository.findOne({ where: { username } });
-    return user ? plainToInstance(UserResponseDto, user) : undefined;
+    return user ? plainToInstance(ValidateUserResponseDto, user) : undefined;
   }
 
   async findOne(id: number): Promise<UserResponseDto> {

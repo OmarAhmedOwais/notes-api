@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { UserRole } from '../user-role.enum';
 
 export class CreateUserDto {
@@ -20,6 +20,7 @@ export class CreateUserDto {
   @IsString({
     message: 'role must be a string',
   })
-  @IsEnum(['user', 'admin'])
-  readonly role: UserRole;
+  @IsOptional()
+  @IsEnum(UserRole)
+  readonly role?: UserRole;
 }

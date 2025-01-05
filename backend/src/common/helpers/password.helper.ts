@@ -7,3 +7,10 @@ export async function hashPassword(
   const salt = await bcrypt.genSalt(saltRounds);
   return bcrypt.hash(password, salt);
 }
+
+export async function comparePasswords(
+  providedPassword: string,
+  storedPassword: string,
+): Promise<boolean> {
+  return await bcrypt.compare(providedPassword, storedPassword);
+}
