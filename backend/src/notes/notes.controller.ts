@@ -29,12 +29,22 @@ export class NotesController {
   async findAll(
     @Query() query: any,
   ): Promise<{ data: NoteResponseDto[]; total: number }> {
-    const { folderId, keyword } = query;
+    const { folderId, keyword, noteType } = query;
     const { skip, take, order } = parsePagination(query);
 
     const folderIdNum = folderId ? parseInt(folderId, 10) : undefined;
 
-    return this.notesService.findAll(folderIdNum, keyword, skip, take, order);
+    const validNoteType =
+      noteType === 'TEXT' || noteType === 'LIST' ? noteType : undefined;
+
+    return this.notesService.findAll(
+      folderIdNum,
+      keyword,
+      validNoteType,
+      skip,
+      take,
+      order,
+    );
   }
 
   @Get(':id')

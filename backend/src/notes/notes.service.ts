@@ -20,6 +20,7 @@ export class NotesService {
   async findAll(
     folderId?: number,
     keyword?: string,
+    noteType?: 'TEXT' | 'LIST',
     skip = 0,
     take = 10,
     order: 'ASC' | 'DESC' = 'DESC',
@@ -40,7 +41,9 @@ export class NotesService {
         },
       );
     }
-
+    if (noteType) {
+      query.andWhere('note.type = :noteType', { noteType });
+    }
     query.orderBy('note.id', order).skip(skip).take(take);
 
     const [notes, total] = await query.getManyAndCount();

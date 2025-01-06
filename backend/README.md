@@ -325,7 +325,7 @@ Content-Type: application/json
 
 | Method | Endpoint       | Description                                                                                                                                  | Access              |
 |-------:|:--------------|:---------------------------------------------------------------------------------------------------------------------------------------------|:--------------------|
-| **GET**    | `/notes`         | Get all notes; supports `folderId`, `keyword`, `skip`, `take`, `order` as query params                                                                 | Auth required (JWT) |
+| **GET**    | `/notes`         | Get all notes; supports `folderId`, `keyword`,`noteType`, `skip`, `take`, `order` as query params                                                                 | Auth required (JWT) |
 | **GET**    | `/notes/:id`     | Get a single note by ID                                                                                                                  | Auth required (JWT) |
 | **POST**   | `/notes`         | Create a new note; requires `title`, `content`, `type` (`TEXT` or `LIST`), and `folderId`                                              | Auth required (JWT) |
 | **PATCH**  | `/notes/:id`     | Update an existing note (change content, folder, etc.)                                                                                 | Auth required (JWT) |
