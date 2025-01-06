@@ -13,6 +13,15 @@ export class FolderResponseDto {
   @Type(() => NoteResponseDto)
   notes?: NoteResponseDto[];
 
+  @Expose()
+  createdAt?: Date;
+
+  @Expose()
+  updatedAt?: Date;
+
+  @Expose()
+  deletedAt?: Date;
+
   constructor(partial: Partial<FolderResponseDto>) {
     Object.assign(this, partial);
   }

@@ -6,7 +6,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserResponseDto } from './dtos/user-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { hashPassword } from 'src/common/helpers/password.helper';
+import { hashPassword } from 'src/common/utils/password.util';
 import { ValidateUserResponseDto } from './dtos/validate-user-response.dto';
 
 @Injectable()

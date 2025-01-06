@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UserResponseDto } from 'src/users/dtos/user-response.dto';
-import { comparePasswords } from 'src/common/helpers/password.helper';
+import { comparePasswords } from 'src/common/utils/password.util';
 import { LoginUserDto } from './dtos/LoginUserDto';
 import { plainToInstance } from 'class-transformer';
 
@@ -28,7 +28,6 @@ export class AuthService {
     if (!isPasswordValid) {
       return null;
     }
-    // Return user minus the password
     return plainToInstance(UserResponseDto, user);
   }
 
@@ -45,10 +44,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Register a new user.
-   * If successful, return newly created user + JWT token (if desired).
-   */
   async register(createUserDto: CreateUserDto) {
     // 1) Check if user already exists
     const existingUser = await this.usersService.findByUsername(
@@ -64,9 +59,7 @@ export class AuthService {
     // 3) Optionally, auto-login by generating JWT right away
     const payload = { username: user.username, sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
-
-    // 4) Return the new user and token
-    // For security, you may want to omit the password from the response
+    // 4) Return the user and the JWT token
     return {
       user: plainToInstance(UserResponseDto, user),
       access_token: accessToken,
