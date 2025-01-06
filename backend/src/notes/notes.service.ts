@@ -7,6 +7,7 @@ import { UpdateNoteDto } from './dtos/update-note.dto';
 import { NoteResponseDto } from './dtos/note-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Folder } from '../folders/folder.entity';
+import { paginate } from '../common/utils/pagination.util';
 
 @Injectable()
 export class NotesService {
@@ -24,7 +25,17 @@ export class NotesService {
     skip = 0,
     take = 10,
     order: 'ASC' | 'DESC' = 'DESC',
-  ): Promise<{ data: NoteResponseDto[]; total: number }> {
+  ): Promise<{
+    data: NoteResponseDto[];
+    total: number;
+    totalPages: number;
+    pageSize: number;
+    currentPage: number;
+    nextPage?: number;
+    previousPage?: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  }> {
     const query = this.notesRepository
       .createQueryBuilder('note')
       .leftJoinAndSelect('note.folder', 'folder');
@@ -44,11 +55,11 @@ export class NotesService {
     if (noteType) {
       query.andWhere('note.type = :noteType', { noteType });
     }
-    query.orderBy('note.id', order).skip(skip).take(take);
-
-    const [notes, total] = await query.getManyAndCount();
-    const data = notes.map((note) => plainToInstance(NoteResponseDto, note));
-    return { data, total };
+    const paginatedResult = await paginate(query, { skip, take, order });
+    const result = paginatedResult.data.map((note) =>
+      plainToInstance(NoteResponseDto, note),
+    );
+    return { ...paginatedResult, data: result };
   }
 
   async findOne(id: number): Promise<NoteResponseDto> {
@@ -77,6 +88,7 @@ export class NotesService {
       ...createNoteDto,
       folder,
     });
+    newNote.content = createNoteDto.content;
     const savedNote = await this.notesRepository.save(newNote);
     return plainToInstance(NoteResponseDto, savedNote);
   }
@@ -105,7 +117,14 @@ export class NotesService {
       note.folder = folder;
     }
 
-    Object.assign(note, updateNoteDto);
+    if (updateNoteDto.title) {
+      note.title = updateNoteDto.title;
+    }
+
+    if (updateNoteDto.content !== undefined) {
+      note.content = updateNoteDto.content;
+    }
+
     const updatedNote = await this.notesRepository.save(note);
     return plainToInstance(NoteResponseDto, updatedNote);
   }

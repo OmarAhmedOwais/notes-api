@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { NoteType } from '../note-type.enum';
 
 export class NoteResponseDto {
@@ -13,10 +13,19 @@ export class NoteResponseDto {
 
   @ApiProperty({
     example: 'This is the content of the note.',
-    description: 'The content of the note',
+    description: 'The content of the note (if type is TEXT)',
+    required: false,
   })
   @Expose()
-  content: string;
+  textContent?: string;
+
+  @ApiPropertyOptional({
+    example: ['Item 1', 'Item 2'],
+    description: 'The list content of the note (if type is LIST)',
+    required: false,
+  })
+  @Expose()
+  listContent?: string[];
 
   @ApiProperty({
     example: NoteType.TEXT,

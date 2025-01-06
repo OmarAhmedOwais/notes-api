@@ -18,11 +18,14 @@ export class Note {
   @Column()
   title: string;
 
-  @Column()
-  content: string;
-
   @Column({ type: 'enum', enum: NoteType, default: NoteType.TEXT })
   type: NoteType;
+
+  @Column({ type: 'text', nullable: true })
+  private textContent: string;
+
+  @Column({ type: 'simple-array', nullable: true })
+  private listContent: string[];
 
   @ManyToOne(() => Folder, (folder) => folder.notes, { onDelete: 'CASCADE' })
   folder: Folder;
@@ -35,4 +38,18 @@ export class Note {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  get content(): string | string[] {
+    return this.type === NoteType.TEXT ? this.textContent : this.listContent;
+  }
+
+  set content(value: string | string[]) {
+    if (this.type === NoteType.TEXT) {
+      this.textContent = value as string;
+      this.listContent = null;
+    } else {
+      this.listContent = value as string[];
+      this.textContent = null;
+    }
+  }
 }

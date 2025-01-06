@@ -1,5 +1,13 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsArray,
+  ValidateIf,
+  IsOptional,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { NoteType } from '../note-type.enum';
 
 export class CreateNoteDto {
@@ -7,14 +15,6 @@ export class CreateNoteDto {
   @IsString()
   @IsNotEmpty()
   title: string;
-
-  @ApiProperty({
-    example: 'This is the content of the note.',
-    description: 'The content of the note',
-  })
-  @IsString()
-  @IsNotEmpty()
-  content: string;
 
   @ApiProperty({
     example: NoteType.TEXT,
@@ -25,6 +25,24 @@ export class CreateNoteDto {
   @IsNotEmpty()
   type: NoteType;
 
+  @ApiPropertyOptional({
+    example: 'This is the content of the note.',
+    description: 'The content of the note (required if type is TEXT)',
+  })
+  @ValidateIf((o) => o.type === NoteType.TEXT)
+  @IsString()
+  @IsOptional()
+  textContent?: string;
+
+  @ApiPropertyOptional({
+    example: ['Item 1', 'Item 2'],
+    description: 'The list content of the note (required if type is LIST)',
+  })
+  @ValidateIf((o) => o.type === NoteType.LIST)
+  @IsArray()
+  @IsOptional()
+  listContent?: string[];
+
   @ApiProperty({
     example: 1,
     description: 'The ID of the folder this note belongs to',
@@ -32,4 +50,8 @@ export class CreateNoteDto {
   @IsNumber()
   @IsNotEmpty()
   folderId: number;
+
+  get content(): string | string[] {
+    return this.type === NoteType.TEXT ? this.textContent : this.listContent;
+  }
 }
