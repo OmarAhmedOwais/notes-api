@@ -23,7 +23,7 @@ import { UpdateFolderDto } from './dtos/update-folder.dto';
 import { FolderResponseDto } from './dtos/folder-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Public } from '../common/decorators/public.decorator';
-import { FindFoldersQueryDto } from './dtos/find-folders-query.dto';
+import { FindFoldersQueryDto } from './dtos/list-folder.dto';
 
 @ApiTags('folders')
 @Controller('folders')

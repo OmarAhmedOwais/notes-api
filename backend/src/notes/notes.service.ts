@@ -7,7 +7,9 @@ import { UpdateNoteDto } from './dtos/update-note.dto';
 import { NoteResponseDto } from './dtos/note-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Folder } from '../folders/folder.entity';
-import { paginate } from '../common/utils/pagination.util';
+import { paginate } from '../common/helpers/pagination.helper';
+import { PaginationOptionsDto, PaginationResponseDto } from 'src/common/dtos';
+import { NoteType } from './note-type.enum';
 
 @Injectable()
 export class NotesService {
@@ -20,22 +22,9 @@ export class NotesService {
 
   async findAll(
     folderId?: number,
-    keyword?: string,
-    noteType?: 'TEXT' | 'LIST',
-    pageSize = 10,
-    pageNumber = 1,
-    order: 'ASC' | 'DESC' = 'DESC',
-  ): Promise<{
-    data: NoteResponseDto[];
-    total: number;
-    totalPages: number;
-    pageSize: number;
-    currentPage: number;
-    nextPage?: number;
-    previousPage?: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  }> {
+    noteType?: NoteType,
+    paginationOptionsDto?: PaginationOptionsDto,
+  ): Promise<PaginationResponseDto<NoteResponseDto>> {
     const query = this.notesRepository
       .createQueryBuilder('note')
       .leftJoinAndSelect('note.folder', 'folder');
@@ -44,11 +33,11 @@ export class NotesService {
       query.andWhere('folder.id = :folderId', { folderId });
     }
 
-    if (keyword) {
+    if (paginationOptionsDto?.keyword) {
       query.andWhere(
         '(note.title ILIKE :keyword OR note.textContent ILIKE :keyword OR note.listContent ILIKE :keyword)',
         {
-          keyword: `%${keyword}%`,
+          keyword: `%${paginationOptionsDto.keyword}%`,
         },
       );
     }
@@ -57,15 +46,11 @@ export class NotesService {
       query.andWhere('note.type = :noteType', { noteType });
     }
 
-    const paginatedResult = await paginate(query, {
-      pageSize,
-      pageNumber,
-      order,
-    });
+    const paginatedResult = await paginate(query, paginationOptionsDto);
     const result = paginatedResult.data.map((note) =>
       plainToInstance(NoteResponseDto, note),
     );
-    return { ...paginatedResult, data: result };
+    return new PaginationResponseDto(result, paginatedResult.meta);
   }
 
   async findOne(id: number): Promise<NoteResponseDto> {

@@ -23,7 +23,8 @@ import { UpdateNoteDto } from './dtos/update-note.dto';
 import { NoteResponseDto } from './dtos/note-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Public } from '../common/decorators/public.decorator';
-import { FindNotesQueryDto } from './dtos/find-notes-query.dto';
+import { ListNotesQueryDto } from './dtos/list-note-query.dto';
+import { ApiPaginatedResponse } from 'src/common/decorators';
 
 @ApiTags('notes')
 @Controller('notes')
@@ -34,24 +35,13 @@ export class NotesController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all notes' })
-  @ApiResponse({
-    status: 200,
-    description: 'The found records',
-    type: [NoteResponseDto],
-  })
+  @ApiPaginatedResponse(NoteResponseDto)
   async findAll(
-    @Query() query: FindNotesQueryDto,
+    @Query() query: ListNotesQueryDto,
   ): Promise<{ data: NoteResponseDto[] }> {
-    const { folderId, keyword, noteType, pageNumber, pageSize, order } = query;
+    const { folderId, noteType, ...paginationOptionsDto } = query;
 
-    return this.notesService.findAll(
-      folderId,
-      keyword,
-      noteType,
-      pageSize,
-      pageNumber,
-      order,
-    );
+    return this.notesService.findAll(folderId, noteType, paginationOptionsDto);
   }
 
   @Get(':id')

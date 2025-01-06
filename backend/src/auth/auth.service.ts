@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UserResponseDto } from 'src/users/dtos/user-response.dto';
-import { comparePasswords } from 'src/common/utils/password.util';
+import { comparePasswords } from 'src/common/helpers/password.helper';
 import { LoginUserDto } from './dtos/login-user.dto';
 import { plainToInstance } from 'class-transformer';
 

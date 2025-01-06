@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import ormConfig from './config/orm.config';
+import ormConfig from './database/orm.config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -11,7 +11,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { FoldersModule } from './folders/folders.module';
 import { NotesModule } from './notes/notes.module';
-import { AdminUserSeeder } from './seeds/admin-user.seeder';
+import { AdminUserSeeder } from './seeds';
 
 @Module({
   imports: [
