@@ -16,12 +16,14 @@ import { CreateFolderDto } from './dtos/create-folder.dto';
 import { UpdateFolderDto } from './dtos/update-folder.dto';
 import { FolderResponseDto } from './dtos/folder-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('folders')
 export class FoldersController {
   constructor(private readonly foldersService: FoldersService) {}
 
   @Get()
+  @Public()
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query('keyword') keyword?: string,
@@ -35,6 +37,7 @@ export class FoldersController {
   }
 
   @Get(':id')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id', ParseIntPipe) id: number,
