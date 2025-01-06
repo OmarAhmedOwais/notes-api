@@ -1,8 +1,8 @@
 import { SelectQueryBuilder } from 'typeorm';
 
 interface PaginationOptions {
-  skip?: number;
-  take?: number;
+  pageSize?: number;
+  pageNumber?: number;
   order?: 'ASC' | 'DESC';
 }
 
@@ -22,24 +22,25 @@ export async function paginate<T>(
   query: SelectQueryBuilder<T>,
   options: PaginationOptions,
 ): Promise<PaginatedResult<T>> {
-  const { skip = 0, take = 10, order = 'DESC' } = options;
+  const { pageSize = 10, pageNumber = 1, order = 'DESC' } = options;
+  const skip = (pageNumber - 1) * pageSize;
+  const take = pageSize;
 
   query.orderBy('note.id', order).skip(skip).take(take);
 
   const [data, total] = await query.getManyAndCount();
-  const currentPage = Math.floor(skip / take) + 1;
-  const totalPages = Math.ceil(total / take);
-  const hasNextPage = currentPage < totalPages;
-  const hasPreviousPage = currentPage > 1;
+  const totalPages = Math.ceil(total / pageSize);
+  const hasNextPage = pageNumber < totalPages;
+  const hasPreviousPage = pageNumber > 1;
 
   return {
     data,
     total,
     totalPages,
-    pageSize: take,
-    currentPage,
-    nextPage: hasNextPage ? currentPage + 1 : undefined,
-    previousPage: hasPreviousPage ? currentPage - 1 : undefined,
+    pageSize,
+    currentPage: pageNumber,
+    nextPage: hasNextPage ? pageNumber + 1 : undefined,
+    previousPage: hasPreviousPage ? pageNumber - 1 : undefined,
     hasNextPage,
     hasPreviousPage,
   };

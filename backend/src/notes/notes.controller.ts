@@ -41,15 +41,15 @@ export class NotesController {
   })
   async findAll(
     @Query() query: FindNotesQueryDto,
-  ): Promise<{ data: NoteResponseDto[]; total: number }> {
-    const { folderId, keyword, noteType, skip, take, order } = query;
+  ): Promise<{ data: NoteResponseDto[] }> {
+    const { folderId, keyword, noteType, pageNumber, pageSize, order } = query;
 
     return this.notesService.findAll(
       folderId,
       keyword,
       noteType,
-      skip,
-      take,
+      pageSize,
+      pageNumber,
       order,
     );
   }

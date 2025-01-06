@@ -1,10 +1,10 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
+import { setupSwagger } from './common/utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,14 +16,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  const config = new DocumentBuilder()
-    .setTitle('Notes Api')
-    .setDescription('The Notes API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  setupSwagger(app);
 
   app.useGlobalInterceptors(new TimeoutInterceptor());
   await app.listen(app.get(ConfigService).get('PORT'));

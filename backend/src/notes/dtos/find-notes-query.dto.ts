@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsEnum, IsInt } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { NoteType } from '../note-type.enum';
 
 export class FindNotesQueryDto {
@@ -24,20 +24,20 @@ export class FindNotesQueryDto {
   noteType?: NoteType;
 
   @ApiPropertyOptional({
-    description: 'Number of records to skip for pagination',
+    description: 'Page number for pagination',
   })
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
-  skip?: number;
+  pageNumber?: number;
 
   @ApiPropertyOptional({
-    description: 'Number of records to take for pagination',
+    description: 'Page size for pagination',
   })
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
-  take?: number;
+  pageSize?: number;
 
   @ApiPropertyOptional({ description: 'Order of records (ASC or DESC)' })
   @IsOptional()

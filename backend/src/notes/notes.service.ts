@@ -22,8 +22,8 @@ export class NotesService {
     folderId?: number,
     keyword?: string,
     noteType?: 'TEXT' | 'LIST',
-    skip = 0,
-    take = 10,
+    pageSize = 10,
+    pageNumber = 1,
     order: 'ASC' | 'DESC' = 'DESC',
   ): Promise<{
     data: NoteResponseDto[];
@@ -46,16 +46,22 @@ export class NotesService {
 
     if (keyword) {
       query.andWhere(
-        '(note.title ILIKE :keyword OR note.content ILIKE :keyword)',
+        '(note.title ILIKE :keyword OR note.textContent ILIKE :keyword OR note.listContent ILIKE :keyword)',
         {
           keyword: `%${keyword}%`,
         },
       );
     }
+
     if (noteType) {
       query.andWhere('note.type = :noteType', { noteType });
     }
-    const paginatedResult = await paginate(query, { skip, take, order });
+
+    const paginatedResult = await paginate(query, {
+      pageSize,
+      pageNumber,
+      order,
+    });
     const result = paginatedResult.data.map((note) =>
       plainToInstance(NoteResponseDto, note),
     );
