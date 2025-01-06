@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { FoldersModule } from './folders/folders.module';
 import { NotesModule } from './notes/notes.module';
+import { AdminUserSeeder } from './seeds/admin-user.seeder';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { NotesModule } from './notes/notes.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    AdminUserSeeder,
   ],
 })
 export class AppModule {}

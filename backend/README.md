@@ -129,7 +129,6 @@ src/
    cd notes-api/backend
    npm install
    ```
-
 ---
 
 ## 6. Configuration
@@ -185,7 +184,12 @@ export class AppModule {}
 
 ## 7. Running the App
 
+**Run the Seeder**:
+   ```bash
+   npm run seed
+   ```
 **Development**:
+
 ```bash
 npm run start:dev
 ```
