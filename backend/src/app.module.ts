@@ -4,7 +4,6 @@ import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ormConfig from './config/orm.config';
-import ormConfigProd from './config/orm.config.prod';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -57,9 +56,7 @@ import { NotesModule } from './notes/notes.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        return configService.get('NODE_ENV') === 'development'
-          ? ormConfig(configService)
-          : ormConfigProd(configService);
+        return ormConfig(configService);
       },
     }),
     AuthModule,

@@ -1,4 +1,3 @@
-// src/users/user.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -30,14 +29,12 @@ export class User {
   })
   role?: UserRole;
 
-  // --- Timestamps ---
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // --- Soft Delete ---
   @DeleteDateColumn()
   deletedAt?: Date;
 }

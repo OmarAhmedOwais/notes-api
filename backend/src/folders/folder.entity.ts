@@ -20,14 +20,12 @@ export class Folder {
   @OneToMany(() => Note, (note) => note.folder, { cascade: true })
   notes: Note[];
 
-  // --- Timestamps ---
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // --- Soft Delete ---
   @DeleteDateColumn()
   deletedAt?: Date;
 }

@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UserResponseDto } from 'src/users/dtos/user-response.dto';
 import { comparePasswords } from 'src/common/utils/password.util';
-import { LoginUserDto } from './dtos/LoginUserDto';
+import { LoginUserDto } from './dtos/login-user.dto';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()

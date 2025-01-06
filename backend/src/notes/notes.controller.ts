@@ -11,14 +11,21 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dtos/create-note.dto';
 import { UpdateNoteDto } from './dtos/update-note.dto';
 import { NoteResponseDto } from './dtos/note-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { parsePagination } from '../common/utils/pagination.util';
 import { Public } from '../common/decorators/public.decorator';
+import { FindNotesQueryDto } from './dtos/find-notes-query.dto';
 
+@ApiTags('notes')
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
@@ -26,21 +33,21 @@ export class NotesController {
   @Get()
   @Public()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all notes' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found records',
+    type: [NoteResponseDto],
+  })
   async findAll(
-    @Query() query: any,
+    @Query() query: FindNotesQueryDto,
   ): Promise<{ data: NoteResponseDto[]; total: number }> {
-    const { folderId, keyword, noteType } = query;
-    const { skip, take, order } = parsePagination(query);
-
-    const folderIdNum = folderId ? parseInt(folderId, 10) : undefined;
-
-    const validNoteType =
-      noteType === 'TEXT' || noteType === 'LIST' ? noteType : undefined;
+    const { folderId, keyword, noteType, skip, take, order } = query;
 
     return this.notesService.findAll(
-      folderIdNum,
+      folderId,
       keyword,
-      validNoteType,
+      noteType,
       skip,
       take,
       order,
@@ -50,6 +57,13 @@ export class NotesController {
   @Get(':id')
   @Public()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get note by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: NoteResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Note not found' })
   async findOne(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<NoteResponseDto> {
@@ -60,7 +74,14 @@ export class NotesController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create note' })
+  @ApiResponse({
+    status: 201,
+    description: 'The note has been successfully created.',
+    type: NoteResponseDto,
+  })
   async create(@Body() createNoteDto: CreateNoteDto): Promise<NoteResponseDto> {
     const note = await this.notesService.create(createNoteDto);
     return plainToInstance(NoteResponseDto, note, {
@@ -69,7 +90,15 @@ export class NotesController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({ summary: 'Update note' })
+  @ApiResponse({
+    status: 202,
+    description: 'The note has been successfully updated.',
+    type: NoteResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Note not found' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateNoteDto: UpdateNoteDto,
@@ -81,7 +110,14 @@ export class NotesController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete note' })
+  @ApiResponse({
+    status: 204,
+    description: 'The note has been successfully deleted.',
+  })
+  @ApiResponse({ status: 404, description: 'Note not found' })
   delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.notesService.delete(id);
   }

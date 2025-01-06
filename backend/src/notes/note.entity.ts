@@ -27,14 +27,12 @@ export class Note {
   @ManyToOne(() => Folder, (folder) => folder.notes, { onDelete: 'CASCADE' })
   folder: Folder;
 
-  // --- Timestamps ---
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // --- Soft Delete ---
   @DeleteDateColumn()
   deletedAt?: Date;
 }
