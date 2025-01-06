@@ -11,7 +11,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { FoldersModule } from './folders/folders.module';
 import { NotesModule } from './notes/notes.module';
-import { AdminUserSeeder } from './seeds';
+import { AdminUserSeeder } from './seeds/admin-user.seeder';
 
 @Module({
   imports: [
