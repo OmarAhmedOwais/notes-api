@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../app/store';
+import { Note } from '../notes/notesApi';
 
 export interface Folder {
   id: number;
   name: string;
-  //notes?: Note[]
+  notes?: Note[]
 }
 
 export const foldersApi = createApi({
