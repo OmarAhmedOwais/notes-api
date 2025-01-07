@@ -1,15 +1,43 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../app/store';
-export enum noteType{
+export type noteType = 'TEXT' | 'LIST';
+export enum NoteType{
     TEXT = 'TEXT',
     LIST = 'LIST',
 }
 export interface Note {
   id: number;
   title: string;
-  content: string;
-  type: noteType;
+  textContent?: string;
+  listContent?: string[];
+  type: NoteType;
   folderId?: number;
+}
+export interface NotesQueryParams {
+  folderId?: number;
+  keyword?: string;
+  page?: number;
+}
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    page: number;
+    take: number;
+    itemCount: number;
+    pageCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+  };
+}
+
+export interface NoteWithFolder extends Note {
+  folder: {
+    id: number;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+  };
 }
 
 export const notesApi = createApi({
@@ -25,7 +53,7 @@ export const notesApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getNotes: builder.query<Note[], { folderId?: number; keyword?: string }>({
+    getNotes: builder.query<PaginatedResponse<NoteWithFolder>, NotesQueryParams>({
       query: ({ folderId, keyword }) => {
         const params = new URLSearchParams();
         if (folderId) params.append('folderId', String(folderId));
@@ -61,4 +89,5 @@ export const {
   useCreateNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
+  useLazyGetNotesQuery,
 } = notesApi;

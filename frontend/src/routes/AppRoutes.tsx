@@ -3,6 +3,7 @@ import LoginPage from "../features/auth/LoginPage";
 import RegisterPage from "../features/auth/RegisterPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import FoldersPage from "../features/folders/FoldersPage";
+import NotesPage from "../features/notes/NotesPage";
 
 function AppRoutes() {
   return (
@@ -14,6 +15,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <FoldersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notes"
+        element={
+          <ProtectedRoute>
+            <NotesPage />
           </ProtectedRoute>
         }
       />
