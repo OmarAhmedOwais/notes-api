@@ -37,7 +37,6 @@ export const useNoteForm = ({ onSuccess }: UseNoteFormProps) => {
 
   const onSubmit: SubmitHandler<Note> = async (data) => {
     try {
-      // No need to transform listContent since it's already string[]
       await createNote(data).unwrap();
       reset();
       onSuccess?.();

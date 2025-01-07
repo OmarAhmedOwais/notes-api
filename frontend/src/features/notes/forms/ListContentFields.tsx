@@ -21,6 +21,7 @@ const ListContentFields: React.FC<ListContentFieldsProps> = ({
     {fields.map((field, index) => (
       <Box key={field.id} sx={{ display: 'flex', gap: 1, mb: 1 }}>
         <TextField
+          id={`listContent.${index}`}
           label={`List Item #${index + 1}`}
           {...register(`listContent.${index}`)}
           error={!!errors.listContent?.[index]}
