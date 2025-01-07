@@ -79,6 +79,7 @@ export class NotesService {
       ...createNoteDto,
       folder,
     });
+
     newNote.content = createNoteDto.content;
     const savedNote = await this.notesRepository.save(newNote);
     return plainToInstance(NoteResponseDto, savedNote);

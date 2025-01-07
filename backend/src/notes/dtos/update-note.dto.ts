@@ -2,13 +2,8 @@ import { PartialType } from '@nestjs/mapped-types';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateNoteDto } from './create-note.dto';
 import { NoteType } from '../note-type.enum';
-import {
-  IsOptional,
-  IsString,
-  IsArray,
-  ValidateIf,
-  IsEnum,
-} from 'class-validator';
+import { IsOptional, IsString, IsArray, IsEnum } from 'class-validator';
+import { IsContentValid } from '../pipe/isContent-valid.pipe';
 
 export class UpdateNoteDto extends PartialType(CreateNoteDto) {
   @ApiPropertyOptional({
@@ -23,18 +18,18 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
     example: 'This is the updated content of the note.',
     description: 'The updated content of the note (if type is TEXT)',
   })
-  @ValidateIf((o) => o.type === NoteType.TEXT)
   @IsOptional()
   @IsString()
+  @IsContentValid({ message: 'textContent is required when type is TEXT' })
   textContent?: string;
 
   @ApiPropertyOptional({
     example: ['Updated Item 1', 'Updated Item 2'],
     description: 'The updated list content of the note (if type is LIST)',
   })
-  @ValidateIf((o) => o.type === NoteType.LIST)
   @IsOptional()
   @IsArray()
+  @IsContentValid({ message: 'listContent is required when type is LIST' })
   listContent?: string[];
 
   @ApiPropertyOptional({

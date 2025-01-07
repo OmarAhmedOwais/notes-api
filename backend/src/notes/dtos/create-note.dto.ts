@@ -5,7 +5,7 @@ import {
   IsString,
   IsArray,
   ValidateIf,
-  IsOptional,
+  IsDefined,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { NoteType } from '../note-type.enum';
@@ -31,7 +31,7 @@ export class CreateNoteDto {
   })
   @ValidateIf((o) => o.type === NoteType.TEXT)
   @IsString()
-  @IsOptional()
+  @IsDefined({ message: 'textContent must be defined when the type is TEXT' })
   textContent?: string;
 
   @ApiPropertyOptional({
@@ -40,7 +40,7 @@ export class CreateNoteDto {
   })
   @ValidateIf((o) => o.type === NoteType.LIST)
   @IsArray()
-  @IsOptional()
+  @IsDefined({ message: 'listContent must be defined when the type is LIST' })
   listContent?: string[];
 
   @ApiProperty({
