@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import LoginPage from "../features/auth/LoginPage";
 import RegisterPage from "../features/auth/RegisterPage";
 import ProtectedRoute from "../components/ProtectedRoute";
+import FoldersPage from "../features/folders/FoldersPage";
 
 function AppRoutes() {
   return (

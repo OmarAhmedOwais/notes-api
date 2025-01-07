@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
 import { authApi } from "../features/auth/authApi";
 import authSlice from "../features/auth/authSlice";
+import { foldersApi } from "../features/folders/foldersApi";
 
 /**
  * RTK store setup
@@ -16,6 +17,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authSlice,
+  [foldersApi.reducerPath]: foldersApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
 });
 
@@ -26,7 +28,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(authApi.middleware),
+    }).concat(foldersApi.middleware,authApi.middleware),
 });
 
 export const persistor = persistStore(store);
