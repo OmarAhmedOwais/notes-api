@@ -1,14 +1,16 @@
-// Copyright 2025 oa147
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//     https://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+import * as Yup from 'yup';
 
+export const loginSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(3, 'Username too short')
+    .required('Username is required'),
+  password: Yup.string().min(6).required('Password is required'),
+});
+
+export const registerSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(3, 'Username too short')
+    .required('Username is required'),
+  password: Yup.string().min(6).required('Password is required'),
+  email: Yup.string().email().required('Email is required'),
+});
