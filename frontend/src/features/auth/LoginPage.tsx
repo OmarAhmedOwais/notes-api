@@ -1,11 +1,19 @@
 import { useForm } from "react-hook-form";
-import { Button, TextField, Container, Typography, Box, Link } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Container,
+  Typography,
+  Box,
+  Link,
+} from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useLoginMutation } from "./authApi";
-import { useAppDispatch } from "../../app/hooks";
-import { setCredentials } from "./authSlice";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useLoginMutation } from "./authApi";
+import { setCredentials } from "./authSlice";
+import { useAppDispatch } from "../../app/hooks";
 import { loginSchema } from "../../utils/validationSchemas";
+import { ApiError, ApiErrorResponse } from "../../utils/apiError";
 
 interface LoginForm {
   username: string;
@@ -35,9 +43,9 @@ function LoginPage() {
         })
       );
       navigate("/folders");
-    } catch (err) {
-      alert(`Invalid credentials or server error with message ${err}`);
-    }
+    } catch (err: unknown) {
+          ApiError(err as ApiErrorResponse, "An error occurred during Login.");
+        }
   };
 
   return (
@@ -79,7 +87,7 @@ function LoginPage() {
         <Box sx={{ mt: 2 }}>
           <Typography variant='body2'>
             Don't have an account?{" "}
-            <Link component={RouterLink} to="/register">
+            <Link component={RouterLink} to='/register'>
               Register here
             </Link>
           </Typography>
