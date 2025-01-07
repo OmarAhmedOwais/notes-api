@@ -1,14 +1,41 @@
-// Copyright 2025 oa147
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//     https://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { logout } from '../features/auth/authSlice';
+import { useNavigate } from 'react-router-dom';
 
+function NavBar() {
+  const { token, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
+  return (
+    <AppBar position="fixed">
+      <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          Folders & Notes
+        </Typography>
+        {token ? (
+          <>
+            <Typography variant="body1" sx={{ mr: 2 }}>
+              Hello, {user?.username || 'User'}
+            </Typography>
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <Button color="inherit" onClick={() => navigate('/login')}>
+            Login
+          </Button>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+}
+
+export default NavBar;

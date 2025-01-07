@@ -1,12 +1,14 @@
 import { CssBaseline } from "@mui/material";
 import AppRoutes from "./routes/AppRoutes";
+import Layout from "./components/Layout";
 
 function App() {
   return (
     <>
       <CssBaseline />
-
-      <AppRoutes />
+      <Layout>
+        <AppRoutes />
+      </Layout>
     </>
   );
 }

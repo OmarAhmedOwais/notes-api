@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useLoginMutation } from "./authApi";
 import { setCredentials } from "./authSlice";
 import { useAppDispatch } from "../../app/hooks";
@@ -50,6 +52,7 @@ function LoginPage() {
 
   return (
     <Container maxWidth='xs'>
+      <ToastContainer/>
       <Box sx={{ mt: 8 }}>
         <Typography variant='h5' gutterBottom>
           Login
