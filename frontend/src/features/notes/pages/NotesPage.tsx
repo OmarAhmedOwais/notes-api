@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Card,
@@ -7,124 +7,37 @@ import {
   Box,
   CircularProgress,
   Chip,
-  Pagination,
   Stack,
-  TextField,
   IconButton,
 } from "@mui/material";
-import { useGetNotesQuery, useDeleteNoteMutation } from "../notesApi";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
-import { NoteWithFolder, PaginatedResponse } from "../types";
-import { ApiErrorResponse } from "../../../utils/apiError";
+import SearchInput from "../../../components/SearchInput";
+import PaginationBar from "../../../components/PaginationBar";
+import { useNotesPage } from "../hooks/useNotesPage";
 
 const NotesPage: React.FC = () => {
-  // State for current page number in pagination
-  const [page, setPage] = useState(1);
-
-  // State for search keyword
-  const [searchKeyword, setSearchKeyword] = useState("");
-
-  // React Router's navigation hook
-  const navigate = useNavigate();
-
-  // Fetch notes data using RTK Query
-  const { data, isLoading, error, refetch } = useGetNotesQuery({
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
     page,
-    keyword: searchKeyword,
-  }) as {
-    data: PaginatedResponse<NoteWithFolder> | undefined;
-    isLoading: boolean;
-    error: ApiErrorResponse;
-    refetch: () => void;
-  };
-
-  // Mutation hook for deleting a note
-  const [deleteNote] = useDeleteNoteMutation();
-
-  // State for delete confirmation dialog
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedNote, setSelectedNote] = useState<NoteWithFolder | null>(null);
-
-  /**
-   * Handle click on the delete button.
-   * Opens the confirmation dialog and sets the selected note.
-   */
-  const handleDeleteClick = (note: NoteWithFolder) => {
-    setSelectedNote(note);
-    setDeleteDialogOpen(true);
-  };
-
-  /**
-   * Confirm deletion of the selected note.
-   * Calls the delete mutation and refetches the notes list.
-   */
-  const handleDeleteConfirm = async () => {
-    if (selectedNote) {
-      try {
-        await deleteNote(selectedNote.id).unwrap();
-        refetch();
-        setDeleteDialogOpen(false);
-        setSelectedNote(null);
-      } catch (err) {
-        console.error("Failed to delete the note: ", err);
-        // Optionally, display an error message to the user here
-      }
-    }
-  };
-
-  /**
-   * Cancel the deletion process.
-   * Closes the confirmation dialog and clears the selected note.
-   */
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-    setSelectedNote(null);
-  };
-
-  /**
-   * Handle page change in pagination.
-   */
-  const handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  };
-
-  /**
-   * Navigate to the Create Note page.
-   */
-  const handleCreate = () => {
-    navigate("/notes/create");
-  };
-
-  /**
-   * Navigate to the Note Details page.
-   */
-  const handleViewDetails = (id: number) => {
-    navigate(`/notes/${id}`);
-  };
-
-  /**
-   * Navigate to the Update Note page.
-   */
-  const handleEdit = (id: number) => {
-    navigate(`/notes/${id}/edit`);
-  };
-
-  /**
-   * Handle changes in the search input.
-   * Updates the search keyword and resets to the first page.
-   */
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(event.target.value);
-    setPage(1);
-  };
+    deleteDialogOpen,
+    selectedNote,
+    handleDeleteClick,
+    handleDeleteConfirm,
+    handleDeleteCancel,
+    handlePageChange,
+    handleCreate,
+    handleViewDetails,
+    handleEdit,
+    handleSearchChange,
+    searchKeyword,
+  } = useNotesPage();
 
   if (isLoading) {
     return (
@@ -164,10 +77,7 @@ const NotesPage: React.FC = () => {
       </Box>
 
       <Box mb={2}>
-        <TextField
-          label='Search Notes'
-          variant='outlined'
-          fullWidth
+        <SearchInput
           value={searchKeyword}
           onChange={handleSearchChange}
           placeholder='Search by title or content...'
@@ -217,7 +127,6 @@ const NotesPage: React.FC = () => {
                   Updated: {format(new Date(note.updatedAt), "PP")}
                 </Typography>
                 <Box>
-                  {/* View Details Button */}
                   <IconButton
                     color='primary'
                     aria-label='view details'
@@ -226,7 +135,6 @@ const NotesPage: React.FC = () => {
                     <VisibilityIcon />
                   </IconButton>
 
-                  {/* Edit Button */}
                   <IconButton
                     color='secondary'
                     aria-label='edit note'
@@ -235,7 +143,6 @@ const NotesPage: React.FC = () => {
                     <EditIcon />
                   </IconButton>
 
-                  {/* Delete Button */}
                   <IconButton
                     color='error'
                     aria-label='delete note'
@@ -248,9 +155,10 @@ const NotesPage: React.FC = () => {
             </CardContent>
           </Card>
         ))}
+
         <Box display='flex' justifyContent='center' mt={2}>
-          <Pagination
-            count={data?.meta.pageCount}
+          <PaginationBar
+            count={data?.meta.pageCount ?? 1}
             page={page}
             onChange={handlePageChange}
             color='primary'
@@ -258,7 +166,6 @@ const NotesPage: React.FC = () => {
         </Box>
       </Stack>
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmDeleteDialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}

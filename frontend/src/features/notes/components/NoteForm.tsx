@@ -2,88 +2,61 @@ import React from "react";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { noteSchema } from "../../../utils/validationSchemas";
-import { useCreateNoteMutation } from "../notesApi";
-import { ApiError, ApiErrorResponse } from "../../../utils/apiError";
 import TextContentField from "./TextContentField";
 import ListContentFields from "./ListContentFields";
-import { Note, NoteFormData, NoteType } from "../types";
+import useNoteForm from "../hooks/useNoteForm";
+import { NoteFormData, NoteType, Note } from "../types";
 
 interface NoteFormProps {
   onSuccess?: () => void;
   defaultValues?: Note;
   isSubmitting?: boolean;
-  onSubmit?: SubmitHandler<NoteFormData>;
+  onSubmit?: (data: NoteFormData) => Promise<void>;
 }
 
 const NoteForm: React.FC<NoteFormProps> = ({
   onSuccess,
   defaultValues,
-  isSubmitting = false,
   onSubmit,
 }) => {
-  const [createNote, { isLoading }] = useCreateNoteMutation();
-
+  // Utilize the custom hook
   const {
-    watch,
+    watchType,
     register,
     handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<NoteFormData>({
-    defaultValues: defaultValues || {
-      title: "",
-      type: NoteType.TEXT,
-      textContent: "",
-      listContent: [""],
-      folderId: 1,
-    },
-    resolver: yupResolver(noteSchema),
+    errors,
+    fields,
+    append,
+    remove,
+    isSubmitting,
+    handleFormSubmit,
+  } = useNoteForm({
+    onSuccess,
+    defaultValues,
+    onSubmit,
   });
-
-  const watchType = watch("type", NoteType.TEXT) || NoteType.TEXT;
-
-  const { fields, append, remove } = useFieldArray({
-    name: "listContent" as never,
-    control,
-  });
-
-  const handleFormSubmit: SubmitHandler<NoteFormData> = async (data) => {
-    if (onSubmit) {
-      await onSubmit(data);
-    } else {
-      try {
-        await createNote(data).unwrap();
-        reset();
-        onSuccess?.();
-      } catch (error) {
-        ApiError(error as ApiErrorResponse, "Failed to create note");
-      }
-    }
-  };
 
   return (
     <>
       <ToastContainer />
       <Box
-        component='form'
+        component="form"
         onSubmit={handleSubmit(handleFormSubmit)}
         sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 3 }}
       >
+        {/* Title Field */}
         <TextField
-          id='title'
-          label='Title'
+          id="title"
+          label="Title"
           {...register("title")}
           error={!!errors.title}
           helperText={errors.title?.message}
         />
 
+        {/* Type Field */}
         <TextField
-          id='type'
-          label='Type'
+          id="type"
+          label="Type"
           select
           value={watchType}
           {...register("type")}
@@ -94,6 +67,7 @@ const NoteForm: React.FC<NoteFormProps> = ({
           <MenuItem value={NoteType.LIST}>LIST</MenuItem>
         </TextField>
 
+        {/* Conditional Rendering Based on Note Type */}
         {watchType === NoteType.TEXT && (
           <TextContentField register={register} errors={errors} />
         )}
@@ -108,21 +82,23 @@ const NoteForm: React.FC<NoteFormProps> = ({
           />
         )}
 
+        {/* Folder ID Field */}
         <TextField
-          id='folderId'
-          label='Folder ID'
-          type='number'
+          id="folderId"
+          label="Folder ID"
+          type="number"
           {...register("folderId", { valueAsNumber: true })}
           error={!!errors.folderId}
           helperText={errors.folderId?.message}
         />
 
+        {/* Submit Button */}
         <Button
-          type='submit'
-          variant='contained'
-          disabled={isLoading || isSubmitting}
+          type="submit"
+          variant="contained"
+          disabled={isSubmitting}
         >
-          {isLoading || isSubmitting ? "Saving..." : "Save Note"}
+          {isSubmitting ? "Saving..." : "Save Note"}
         </Button>
       </Box>
     </>
