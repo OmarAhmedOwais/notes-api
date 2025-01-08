@@ -1,9 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { PaginationOptionsDto } from 'src/common/dtos';
 
-export class FindFoldersQueryDto {
-  @ApiPropertyOptional({ description: 'Keyword to search folders' })
-  @IsOptional()
-  @IsString()
-  keyword?: string;
+export class FindFoldersQueryDto extends PaginationOptionsDto {
 }

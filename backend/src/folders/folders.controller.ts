@@ -24,6 +24,7 @@ import { FolderResponseDto } from './dtos/folder-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { Public } from '../common/decorators/public.decorator';
 import { FindFoldersQueryDto } from './dtos/list-folder.dto';
+import { ApiPaginatedResponse } from 'src/common/decorators';
 
 @ApiTags('folders')
 @Controller('folders')
@@ -34,21 +35,12 @@ export class FoldersController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all folders' })
-  @ApiResponse({
-    status: 200,
-    description: 'The found records',
-    type: [FolderResponseDto],
-  })
+  @ApiPaginatedResponse(FolderResponseDto)
   async findAll(
     @Query() query: FindFoldersQueryDto,
-  ): Promise<FolderResponseDto[]> {
-    const { keyword } = query;
-    const folders = await this.foldersService.findAll(keyword);
-    return folders.map((folder) =>
-      plainToInstance(FolderResponseDto, folder, {
-        excludeExtraneousValues: true,
-      }),
-    );
+  ): Promise<{ data: FolderResponseDto[] }> {
+    const { ...paginationOptionsDto } = query;
+    return this.foldersService.findAll(paginationOptionsDto);
   }
 
   @Get(':id')

@@ -4,12 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Folder } from './folder.entity';
 import { CreateFolderDto } from './dtos/create-folder.dto';
 import { UpdateFolderDto } from './dtos/update-folder.dto';
 import { FolderResponseDto } from './dtos/folder-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { PaginationOptionsDto, PaginationResponseDto } from 'src/common/dtos';
+import { paginate } from 'src/common/helpers';
 
 @Injectable()
 export class FoldersService {
@@ -18,17 +20,28 @@ export class FoldersService {
     private readonly foldersRepository: Repository<Folder>,
   ) {}
 
-  async findAll(keyword?: string): Promise<FolderResponseDto[]> {
-    const where = keyword ? { name: ILike(`%${keyword}%`) } : {};
+  async findAll(
+    paginationOptionsDto?: PaginationOptionsDto,
+  ): Promise<PaginationResponseDto<FolderResponseDto>> {
+    const query = this.foldersRepository
+      .createQueryBuilder('folder')
+      .leftJoinAndSelect('folder.notes', 'notes');
 
-    const folders = await this.foldersRepository.find({
-      where,
-      relations: ['notes'],
+    if (paginationOptionsDto?.keyword) {
+      query.andWhere('folder.name ILIKE :keyword', {
+        keyword: `%${paginationOptionsDto.keyword}%`,
+      });
+    }
+
+    const paginatedResult = await paginate(query, {
+      ...paginationOptionsDto,
+      alias: 'folder',
+      orderByField: 'id',
     });
-
-    return folders.map((folder: Folder) =>
+    const result = paginatedResult.data.map((folder: Folder) =>
       plainToInstance(FolderResponseDto, folder),
     );
+    return new PaginationResponseDto(result, paginatedResult.meta);
   }
 
   async findOne(id: number): Promise<FolderResponseDto> {

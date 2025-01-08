@@ -46,7 +46,11 @@ export class NotesService {
       query.andWhere('note.type = :noteType', { noteType });
     }
 
-    const paginatedResult = await paginate(query, paginationOptionsDto);
+    const paginatedResult = await paginate(query, {
+      ...paginationOptionsDto,
+      alias: 'note',
+      orderByField: 'id',
+    });
     const result = paginatedResult.data.map((note) =>
       plainToInstance(NoteResponseDto, note),
     );

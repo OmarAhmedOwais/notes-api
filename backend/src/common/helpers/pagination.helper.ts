@@ -3,14 +3,29 @@ import { PaginationOptionsDto } from '../dtos/pagination-options.dto';
 import { PaginationResponseDto } from '../dtos/pagination-response.dto';
 import { PaginationMetaDto } from '../dtos/pagination-meta.dto';
 
+interface PaginateOptions extends PaginationOptionsDto {
+  alias?: string;
+  orderByField?: string;
+}
+
 export async function paginate<T>(
   query: SelectQueryBuilder<T>,
-  options: PaginationOptionsDto,
+  options: PaginateOptions,
 ): Promise<PaginationResponseDto<T>> {
-  const { take = 10, page = 1, order = 'DESC' } = options;
+  const {
+    take = 10,
+    page = 1,
+    order = 'DESC',
+    alias,
+    orderByField = 'id',
+  } = options;
   const skip = (page - 1) * take;
 
-  query.orderBy('note.id', order).skip(skip).take(take);
+  if (alias) {
+    query.orderBy(`${alias}.${orderByField}`, order);
+  }
+
+  query.skip(skip).take(take);
 
   const [data, total] = await query.getManyAndCount();
 
