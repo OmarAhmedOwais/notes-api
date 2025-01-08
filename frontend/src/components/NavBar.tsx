@@ -17,7 +17,7 @@ function NavBar() {
     <AppBar position='fixed'>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography variant='h6' sx={{ flexGrow: 1 }}>
-          Folders & Notes
+          Notes API
         </Typography>
         {token ? (
           <>

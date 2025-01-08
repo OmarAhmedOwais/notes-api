@@ -1,13 +1,13 @@
 import { Box, TextField, Button } from '@mui/material';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { Note } from '../notesApi';
+import { NoteFormData } from '../types';
 
 interface ListContentFieldsProps {
   fields: { id: string }[];
   append: (value: string) => void;
   remove: (index: number) => void;
-  register: UseFormRegister<Note>;
-  errors: FieldErrors<Note>;
+  register: UseFormRegister<NoteFormData>;
+  errors: FieldErrors<NoteFormData>;
 }
 
 const ListContentFields: React.FC<ListContentFieldsProps> = ({

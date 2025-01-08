@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { Note, NoteType } from "../features/notes/notesApi";
+import { NoteFormData, NoteType } from "../features/notes/types";
 
 export const loginSchema = Yup.object().shape({
   username: Yup.string()
@@ -23,8 +23,7 @@ export const folderSchema = Yup.object().shape({
     .required("Folder name is required"),
 });
 
-export const noteSchema: Yup.ObjectSchema<Note> = Yup.object({
-  id: Yup.number().required("ID is required"),
+export const noteSchema: Yup.ObjectSchema<NoteFormData> = Yup.object({
   title: Yup.string().required("Title is required"),
   type: Yup.mixed<NoteType>()
     .oneOf(Object.values(NoteType))
