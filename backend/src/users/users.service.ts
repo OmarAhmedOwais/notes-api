@@ -8,6 +8,8 @@ import { UserResponseDto } from './dtos/user-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { hashPassword } from 'src/common/helpers/password.helper';
 import { ValidateUserResponseDto } from './dtos/validate-user-response.dto';
+import { PaginationOptionsDto, PaginationResponseDto } from 'src/common/dtos';
+import { paginate } from 'src/common/helpers';
 
 @Injectable()
 export class UsersService {
@@ -53,9 +55,28 @@ export class UsersService {
     return plainToInstance(UserResponseDto, user);
   }
 
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.usersRepository.find();
-    return users.map((user) => plainToInstance(UserResponseDto, user));
+  async findAll(
+    paginationOptionsDto?: PaginationOptionsDto,
+  ): Promise<PaginationResponseDto<UserResponseDto>> {
+    const query = this.usersRepository.createQueryBuilder('user');
+    if (paginationOptionsDto?.keyword) {
+      query.andWhere(
+        'user.email ILIKE :keyword OR user.username ILIKE :keyword',
+        {
+          keyword: `%${paginationOptionsDto.keyword}%`,
+        },
+      );
+    }
+
+    const paginatedResult = await paginate(query, {
+      ...paginationOptionsDto,
+      alias: 'user',
+      orderByField: 'id',
+    });
+    const result = paginatedResult.data.map((user) =>
+      plainToInstance(UserResponseDto, user),
+    );
+    return new PaginationResponseDto(result, paginatedResult.meta);
   }
 
   async update(

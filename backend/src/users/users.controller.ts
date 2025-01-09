@@ -4,11 +4,11 @@ import {
   Body,
   Get,
   Param,
-  NotFoundException,
   Patch,
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -20,9 +20,10 @@ import { UsersService } from './users.service';
 import { UserResponseDto } from './dtos/user-response.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { plainToInstance } from 'class-transformer';
 import { UserRole } from './user-role.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiPaginatedResponse } from 'src/common/decorators';
+import { FindUsersQueryDto } from './dtos';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -40,9 +41,8 @@ export class UsersController {
     type: UserResponseDto,
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const user = await this.usersService.create(createUserDto);
-    return plainToInstance(UserResponseDto, user);
+  create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    return this.usersService.create(createUserDto);
   }
 
   @Get(':id')
@@ -54,24 +54,20 @@ export class UsersController {
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async findOne(@Param('id') id: number): Promise<UserResponseDto> {
-    const user = await this.usersService.findOne(id);
-    if (!user) throw new NotFoundException('User not found');
-    return plainToInstance(UserResponseDto, user);
+  findOne(@Param('id') id: number): Promise<UserResponseDto> {
+    return this.usersService.findOne(id);
   }
 
   @Get()
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({
-    status: 200,
-    description: 'The found records',
-    type: [UserResponseDto],
-  })
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.usersService.findAll();
-    return users.map((user) => plainToInstance(UserResponseDto, user));
+  @ApiPaginatedResponse(UserResponseDto)
+  findAll(
+    @Query() query: FindUsersQueryDto,
+  ): Promise<{ data: UserResponseDto[] }> {
+    const { ...paginationOptionsDto } = query;
+    return this.usersService.findAll(paginationOptionsDto);
   }
 
   @Patch(':id')
@@ -88,8 +84,7 @@ export class UsersController {
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const user = await this.usersService.update(id, updateUserDto);
-    return plainToInstance(UserResponseDto, user);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
@@ -101,7 +96,7 @@ export class UsersController {
     description: 'The user has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async delete(@Param('id') id: number): Promise<void> {
+  delete(@Param('id') id: number): Promise<void> {
     return this.usersService.delete(id);
   }
 }
