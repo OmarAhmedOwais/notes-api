@@ -193,8 +193,9 @@ export class AppModule {}
 ```bash
 npm run start:dev
 ```
-Visits `http://localhost:3000` by default.
-
+Visits `http://localhost:3001` by default.
+**Swagger Documentation**:
+Visits `http://localhost:3001/documentation` by default.
 **Production**:
 ```bash
 npm run build
