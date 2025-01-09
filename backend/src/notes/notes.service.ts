@@ -65,7 +65,9 @@ export class NotesService {
     if (!note) {
       throw new NotFoundException('Note not found');
     }
-    return plainToInstance(NoteResponseDto, note);
+    return plainToInstance(NoteResponseDto, note, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async create(createNoteDto: CreateNoteDto): Promise<NoteResponseDto> {
@@ -86,7 +88,9 @@ export class NotesService {
 
     newNote.content = createNoteDto.content;
     const savedNote = await this.notesRepository.save(newNote);
-    return plainToInstance(NoteResponseDto, savedNote);
+    return plainToInstance(NoteResponseDto, savedNote, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async update(
@@ -122,7 +126,9 @@ export class NotesService {
     }
 
     const updatedNote = await this.notesRepository.save(note);
-    return plainToInstance(NoteResponseDto, updatedNote);
+    return plainToInstance(NoteResponseDto, updatedNote, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async delete(id: number): Promise<void> {

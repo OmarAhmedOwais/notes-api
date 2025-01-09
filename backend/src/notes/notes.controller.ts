@@ -21,7 +21,6 @@ import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dtos/create-note.dto';
 import { UpdateNoteDto } from './dtos/update-note.dto';
 import { NoteResponseDto } from './dtos/note-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { Public } from '../common/decorators/public.decorator';
 import { ListNotesQueryDto } from './dtos/list-note-query.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators';
@@ -36,7 +35,7 @@ export class NotesController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all notes' })
   @ApiPaginatedResponse(NoteResponseDto)
-  async findAll(
+  findAll(
     @Query() query: ListNotesQueryDto,
   ): Promise<{ data: NoteResponseDto[] }> {
     const { folderId, noteType, ...paginationOptionsDto } = query;
@@ -54,13 +53,8 @@ export class NotesController {
     type: NoteResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Note not found' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<NoteResponseDto> {
-    const note = await this.notesService.findOne(id);
-    return plainToInstance(NoteResponseDto, note, {
-      excludeExtraneousValues: true,
-    });
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<NoteResponseDto> {
+    return this.notesService.findOne(id);
   }
 
   @Post()
@@ -72,11 +66,8 @@ export class NotesController {
     description: 'The note has been successfully created.',
     type: NoteResponseDto,
   })
-  async create(@Body() createNoteDto: CreateNoteDto): Promise<NoteResponseDto> {
-    const note = await this.notesService.create(createNoteDto);
-    return plainToInstance(NoteResponseDto, note, {
-      excludeExtraneousValues: true,
-    });
+  create(@Body() createNoteDto: CreateNoteDto): Promise<NoteResponseDto> {
+    return this.notesService.create(createNoteDto);
   }
 
   @Patch(':id')
@@ -89,14 +80,11 @@ export class NotesController {
     type: NoteResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Note not found' })
-  async update(
+  update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateNoteDto: UpdateNoteDto,
   ): Promise<NoteResponseDto> {
-    const note = await this.notesService.update(id, updateNoteDto);
-    return plainToInstance(NoteResponseDto, note, {
-      excludeExtraneousValues: true,
-    });
+    return this.notesService.update(id, updateNoteDto);
   }
 
   @Delete(':id')
