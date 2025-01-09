@@ -3,10 +3,10 @@ import { Box, TextField, Button } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useCreateFolderMutation } from "./foldersApi";
 import { ApiError, ApiErrorResponse } from "../../utils/apiError";
 import { folderSchema } from "../../utils/validationSchemas";
 import { FolderFormData } from "./types";
+import { useFolderForm } from "./hooks/useFolderForm";
 
 interface FolderFormProps {
   onSuccess?: () => void;
@@ -18,8 +18,8 @@ const FolderForm: React.FC<FolderFormProps> = ({
   onSuccess,
   defaultValues,
   onSubmit: customSubmitHandler,
-}: FolderFormProps) => {
-  const [createFolder, { isLoading }] = useCreateFolderMutation();
+}) => {
+  const { createNewFolder, isLoading } = useFolderForm(onSuccess);
 
   const {
     register,
@@ -32,16 +32,15 @@ const FolderForm: React.FC<FolderFormProps> = ({
   });
 
   const handleFormSubmit = async (data: FolderFormData) => {
-    try {
-      if (customSubmitHandler) {
+    if (customSubmitHandler) {
+      try {
         await customSubmitHandler(data);
-      } else {
-        await createFolder(data).unwrap();
-        reset();
-        onSuccess?.();
+      } catch (error) {
+        ApiError(error as ApiErrorResponse, "Failed to create folder");
       }
-    } catch (error) {
-      ApiError(error as ApiErrorResponse, "Failed to create folder");
+    } else {
+      await createNewFolder(data);
+      reset();
     }
   };
 
@@ -65,6 +64,6 @@ const FolderForm: React.FC<FolderFormProps> = ({
       </Box>
     </>
   );
-}
+};
 
 export default FolderForm;
