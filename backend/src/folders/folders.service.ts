@@ -52,7 +52,9 @@ export class FoldersService {
     if (!folder) {
       throw new NotFoundException('Folder not found');
     }
-    return plainToInstance(FolderResponseDto, folder);
+    return plainToInstance(FolderResponseDto, folder, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async create(createFolderDto: CreateFolderDto): Promise<FolderResponseDto> {
@@ -67,7 +69,9 @@ export class FoldersService {
       name: createFolderDto.name,
     });
     const savedFolder = await this.foldersRepository.save(newFolder);
-    return plainToInstance(FolderResponseDto, savedFolder);
+    return plainToInstance(FolderResponseDto, savedFolder, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async update(
@@ -83,7 +87,9 @@ export class FoldersService {
 
     Object.assign(folder, updateFolderDto);
     const updatedFolder = await this.foldersRepository.save(folder);
-    return plainToInstance(FolderResponseDto, updatedFolder);
+    return plainToInstance(FolderResponseDto, updatedFolder, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async delete(id: number): Promise<void> {

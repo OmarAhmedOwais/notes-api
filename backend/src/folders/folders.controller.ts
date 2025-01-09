@@ -21,7 +21,6 @@ import { FoldersService } from './folders.service';
 import { CreateFolderDto } from './dtos/create-folder.dto';
 import { UpdateFolderDto } from './dtos/update-folder.dto';
 import { FolderResponseDto } from './dtos/folder-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { Public } from '../common/decorators/public.decorator';
 import { FindFoldersQueryDto } from './dtos/list-folder.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators';
@@ -36,7 +35,7 @@ export class FoldersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all folders' })
   @ApiPaginatedResponse(FolderResponseDto)
-  async findAll(
+  findAll(
     @Query() query: FindFoldersQueryDto,
   ): Promise<{ data: FolderResponseDto[] }> {
     const { ...paginationOptionsDto } = query;
@@ -53,13 +52,8 @@ export class FoldersController {
     type: FolderResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Folder not found' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<FolderResponseDto> {
-    const folder = await this.foldersService.findOne(id);
-    return plainToInstance(FolderResponseDto, folder, {
-      excludeExtraneousValues: true,
-    });
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<FolderResponseDto> {
+    return this.foldersService.findOne(id);
   }
 
   @Post()
@@ -71,13 +65,8 @@ export class FoldersController {
     description: 'The folder has been successfully created.',
     type: FolderResponseDto,
   })
-  async create(
-    @Body() folderData: CreateFolderDto,
-  ): Promise<FolderResponseDto> {
-    const folder = await this.foldersService.create(folderData);
-    return plainToInstance(FolderResponseDto, folder, {
-      excludeExtraneousValues: true,
-    });
+  create(@Body() folderData: CreateFolderDto): Promise<FolderResponseDto> {
+    return this.foldersService.create(folderData);
   }
 
   @Patch(':id')
@@ -90,14 +79,11 @@ export class FoldersController {
     type: FolderResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Folder not found' })
-  async update(
+  update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateData: UpdateFolderDto,
   ): Promise<FolderResponseDto> {
-    const folder = await this.foldersService.update(id, updateData);
-    return plainToInstance(FolderResponseDto, folder, {
-      excludeExtraneousValues: true,
-    });
+    return this.foldersService.update(id, updateData);
   }
 
   @Delete(':id')
