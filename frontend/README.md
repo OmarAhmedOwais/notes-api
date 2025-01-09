@@ -1,50 +1,46 @@
-# React + TypeScript + Vite
+## Overview
+This application is a note-taking and folder management system built with React, Redux Toolkit, and React Router. It provides a login and registration flow, protected routes for authenticated users, and a clean interface for creating, viewing, updating, and deleting notes and folders.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Features
+- User authentication with protected routes.  
+- Folder management (create, view, update, delete).  
+- Note management (create, view, update, delete) with folder assignment.  
+- Form validation with `react-hook-form` and Yup.  
+- API data fetching using `@reduxjs/toolkit/query`.
 
-Currently, two official plugins are available:
+## Project Structure
+- `features/auth`: Contains login and register pages.  
+- `features/folders`: Handles folder functionality (APIs, hooks, pages).  
+- `features/notes`: Manages notes functionality.  
+- 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+AppRoutes.tsx
 
-## Expanding the ESLint configuration
+: Defines the routing for the entire application, including protected routes.  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Getting Started
+1. Clone the repository.  
+    ```bash
+    git clone https://github.com/OmarAhmedOwais/notes-api
+    ```
+2. **Install dependencies**:
+   ```bash
+   cd notes-api/backend
+   npm install
+   ```
+3. Set environment variables (e.g. `VITE_API_BASE_URL` for API URL).  
+4. Start the development server:  
+   ```bash
+   npm run dev
+   ```
+Visits `http://localhost:5173` by default.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Building
+To create a production build:  
+```bash
+npm run build
 ```
+Then deploy the contents of the `dist` folder.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## License
+MIT License. Use this project as you wish.  
