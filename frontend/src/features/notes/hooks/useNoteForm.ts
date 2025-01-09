@@ -39,7 +39,7 @@ const useNoteForm = ({
       ? {
           title: defaultValues.title,
           type: defaultValues.type,
-          textContent: defaultValues.textContent || "",
+          textContent: defaultValues.textContent ?? "",
           listContent: defaultValues.listContent || [""],
           folderId: defaultValues.folderId,
         }
@@ -67,7 +67,7 @@ const useNoteForm = ({
       reset({
         title: defaultValues.title,
         type: defaultValues.type,
-        textContent: defaultValues.textContent || "",
+        textContent: defaultValues.textContent ?? "",
         listContent: defaultValues.listContent || [""],
         folderId: defaultValues.folderId,
       });

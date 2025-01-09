@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../app/store';
-import { Note, NotesQueryParams, NoteWithFolder, PaginatedResponse } from './types';
+import { Note, NotesQueryParams, NoteWithFolder} from './types';
+import { PaginatedResponse } from '../../types';
 
 
 export const notesApi = createApi({
@@ -35,7 +36,7 @@ export const notesApi = createApi({
     }),
     getNoteById: builder.query<Note, number>({
       query: (id) => `/notes/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Notes', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Notes', id }],
     }),
     createNote: builder.mutation<Note, Partial<Note>>({
       query: (body) => ({
@@ -51,14 +52,14 @@ export const notesApi = createApi({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Notes', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Notes', id }],
     }),
     deleteNote: builder.mutation<void, number>({
       query: (id) => ({
         url: `/notes/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Notes', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Notes', id }],
     }),
   }),
 });

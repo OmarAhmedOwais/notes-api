@@ -1,3 +1,5 @@
+import { QueryParams } from "../../types";
+
 export type noteType = "TEXT" | "LIST";
 export enum NoteType {
   TEXT = "TEXT",
@@ -23,21 +25,8 @@ export interface NoteFormData {
   folderId: number;
 }
 
-export interface NotesQueryParams {
+export interface NotesQueryParams extends QueryParams {
   folderId?: number;
-  keyword?: string;
-  page?: number;
-}
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    page: number;
-    take: number;
-    itemCount: number;
-    pageCount: number;
-    hasPreviousPage: boolean;
-    hasNextPage: boolean;
-  };
 }
 
 export interface NoteWithFolder extends Note {

@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import ConfirmDeleteDialog from "../components/ConfirmDeleteDialog";
+import ConfirmDeleteDialog from "../../../components/ConfirmDeleteDialog";
 import SearchInput from "../../../components/SearchInput";
 import PaginationBar from "../../../components/PaginationBar";
 import { useNotesPage } from "../hooks/useNotesPage";
@@ -170,7 +170,8 @@ const NotesPage: React.FC = () => {
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        noteTitle={selectedNote?.title ?? ""}
+        itemName={selectedNote?.title ?? ""}
+        itemType="Note"
       />
     </Box>
   );

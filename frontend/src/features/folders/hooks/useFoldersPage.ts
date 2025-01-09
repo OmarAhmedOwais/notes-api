@@ -1,51 +1,52 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetNotesQuery, useDeleteNoteMutation } from "../notesApi";
-import { NoteWithFolder} from "../types";
+import { useGetFoldersQuery, useDeleteFolderMutation } from "../foldersApi";
+import { Folder } from "../types";
 import { PaginatedResponse } from "../../../types";
 import { ApiErrorResponse } from "../../../utils/apiError";
 
-export function useNotesPage() {
+export function useFoldersPage() {
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedNote, setSelectedNote] = useState<NoteWithFolder | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [expandedFolderId, setExpandedFolderId] = useState<string | null>(null); // State for expanded folder
 
   const navigate = useNavigate();
 
-  const { data, isLoading, error, refetch } = useGetNotesQuery({
+  const { data, isLoading, error, refetch } = useGetFoldersQuery({
     page,
     keyword: searchKeyword,
   }) as {
-    data: PaginatedResponse<NoteWithFolder> | undefined;
+    data: PaginatedResponse<Folder> | undefined;
     isLoading: boolean;
     error: ApiErrorResponse;
     refetch: () => void;
   };
 
-  const [deleteNote] = useDeleteNoteMutation();
+  const [deleteFolder] = useDeleteFolderMutation();
 
-  const handleDeleteClick = (note: NoteWithFolder) => {
-    setSelectedNote(note);
+  const handleDeleteClick = (folder: Folder) => {
+    setSelectedFolder(folder);
     setDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (selectedNote) {
+    if (selectedFolder) {
       try {
-        await deleteNote(selectedNote.id).unwrap();
+        await deleteFolder(selectedFolder.id).unwrap();
         refetch();
         setDeleteDialogOpen(false);
-        setSelectedNote(null);
+        setSelectedFolder(null);
       } catch (err) {
-        console.error("Failed to delete the note: ", err);
+        console.error("Failed to delete the folder: ", err);
       }
     }
   };
 
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
-    setSelectedNote(null);
+    setSelectedFolder(null);
   };
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
@@ -53,20 +54,25 @@ export function useNotesPage() {
   };
 
   const handleCreate = () => {
-    navigate("/notes/create");
+    navigate("/folders/create");
   };
 
   const handleViewDetails = (id: number) => {
-    navigate(`/notes/${id}`);
+    navigate(`/folders/${id}`);
   };
 
   const handleEdit = (id: number) => {
-    navigate(`/notes/${id}/edit`);
+    navigate(`/folders/${id}/edit`);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(event.target.value);
     setPage(1);
+  };
+
+  // Function to toggle folder expansion
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolderId((prevId) => (prevId === folderId ? null : folderId));
   };
 
   return {
@@ -77,7 +83,9 @@ export function useNotesPage() {
     page,
     searchKeyword,
     deleteDialogOpen,
-    selectedNote,
+    selectedFolder,
+    expandedFolderId,
+    toggleFolder,
     handleDeleteClick,
     handleDeleteConfirm,
     handleDeleteCancel,
